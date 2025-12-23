@@ -18,6 +18,7 @@ def init_database():
             id SERIAL PRIMARY KEY,
             latitude DECIMAL(10,8) NOT NULL,
             longitude DECIMAL(11,8) NOT NULL,
+            address TEXT,
             ratings INTEGER[] DEFAULT '{}',
             avg_rating DECIMAL(3,2) DEFAULT 0.0  
         )
