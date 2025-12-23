@@ -22,9 +22,11 @@ def load_data():
             coords = point.get('координаты', '')
             if coords:
                 lat, lon = coords.split()
+                address = point.get('адрес', '')
+                
                 cur.execute(
-                    "INSERT INTO wifi_points (latitude, longitude, ratings, avg_rating) VALUES (%s, %s, %s, %s)",
-                    (float(lat), float(lon), [], 0.0)
+                    "INSERT INTO wifi_points (latitude, longitude, address, ratings, avg_rating) VALUES (%s, %s, %s, %s, %s)",
+                    (float(lat), float(lon), address, [], 0.0)
                 )
                 total_loaded += 1
         
@@ -37,13 +39,15 @@ def load_data():
         with open('address_dr.json', 'r', encoding='utf-8') as f:
             data_dr = json.load(f)
         
-        for point in data_dr:
+        for point in data_rt:
             coords = point.get('координаты', '')
             if coords:
                 lat, lon = coords.split()
+                address = point.get('адрес', '')
+                
                 cur.execute(
-                    "INSERT INTO wifi_points (latitude, longitude, ratings, avg_rating) VALUES (%s, %s, %s, %s)",
-                    (float(lat), float(lon), [], 0.0)
+                    "INSERT INTO wifi_points (latitude, longitude, address, ratings, avg_rating) VALUES (%s, %s, %s, %s, %s)",
+                    (float(lat), float(lon), address, [], 0.0)
                 )
                 total_loaded += 1
         
