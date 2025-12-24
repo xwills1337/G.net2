@@ -11,6 +11,7 @@ def load_data():
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     
+    cur.execute("TRUNCATE TABLE wifi_points RESTART IDENTITY")    
     total_loaded = 0
     
     # Загружаем Ростелеком
@@ -39,11 +40,19 @@ def load_data():
         with open('address_dr.json', 'r', encoding='utf-8') as f:
             data_dr = json.load(f)
         
-        for point in data_rt:
+        for point in data_dr:
             coords = point.get('координаты', '')
             if coords:
                 lat, lon = coords.split()
                 address = point.get('адрес', '')
+
+                cur.execute(
+                    "SELECT id FROM wifi_points WHERE latitude = %s AND longitude = %s",
+                    (float(lat), float(lon))
+                )
+                
+                if cur.fetchone():
+                    continue
                 
                 cur.execute(
                     "INSERT INTO wifi_points (latitude, longitude, address, ratings, avg_rating) VALUES (%s, %s, %s, %s, %s)",
