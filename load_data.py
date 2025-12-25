@@ -2,6 +2,7 @@ import json
 import psycopg2
 import os
 
+
 def load_data():
     """Загружает координаты из JSON в БД"""
     DATABASE_URL = os.environ.get('DATABASE_URL')
@@ -69,5 +70,40 @@ def load_data():
     conn.close()
     print(f"Всего загружено точек: {total_loaded}")
 
+
+def generate_random_ratings():
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    if not DATABASE_URL:
+        DATABASE_URL = "postgresql://postgres:password@localhost:5432/wifinder"
+    
+    conn = psycopg2.connect(DATABASE_URL)
+    cur = conn.cursor()
+    
+    cur.execute("SELECT id FROM wifi_points")
+    all_points = cur.fetchall()
+    
+    for point_row in all_points:
+        point_id = point_row[0]
+        
+        if random.random() < 0.03:
+            ratings = [5, 5, 5]
+        else:
+            num_reviews = random.randint(3, 10)
+            ratings = [random.randint(1, 5) for _ in range(num_reviews)]
+        
+        avg_rating = sum(ratings) / len(ratings)
+        avg_rating = round(avg_rating, 2)
+        
+        cur.execute(
+            "UPDATE wifi_points SET ratings = %s, avg_rating = %s WHERE id = %s",
+            (ratings, avg_rating, point_id)
+        )
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+
+
 if __name__ == "__main__":
     load_data()
+    generate_random_ratings()
