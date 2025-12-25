@@ -26,6 +26,14 @@ def load_data():
             if coords:
                 lat, lon = coords.split()
                 address = point.get('адрес', '')
+
+                cur.execute(
+                    "SELECT id FROM wifi_points WHERE latitude = %s AND longitude = %s",
+                    (float(lat), float(lon))
+                )
+                
+                if cur.fetchone():
+                    continue
                 
                 cur.execute(
                     "INSERT INTO wifi_points (latitude, longitude, address, ratings, avg_rating) VALUES (%s, %s, %s, %s, %s)",
